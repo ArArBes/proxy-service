@@ -31,7 +31,7 @@ class ClientApp:
         self.user_id = None
         self.ws = None
 
-        root.protocol("WM_DELETE_WINDOW", self._on_close)
+        root.protocol("WM_DELETE_WINDOW", self._on_close_window)
 
     def _log(self, text, color="blue"):
         self.status_label.config(text=f"Статус: {text}", fg=color)
@@ -75,7 +75,7 @@ class ClientApp:
                                on_open=self._on_open,
                                on_message=self._on_message,
                                on_error=self._on_error,
-                               on_close=self._on_close)
+                               on_close=self._on_ws_close)
         Thread(target=self.ws.run_forever, daemon=True).start()
 
     def disconnect(self):
@@ -117,10 +117,21 @@ class ClientApp:
         self.root.after(0, lambda: self.connect_btn.config(state=NORMAL, text="Подключиться"))
         self.root.after(0, lambda: self.disconnect_btn.config(state=DISABLED))
 
-    def _on_close(self, ws, close_status_code=None, close_msg=None):
-        self.root.after(0, lambda: self._log("Соединение закрыто", "gray"))
+    def _on_ws_close(self, ws, close_status_code=None, close_msg=None):
+        self.root.after(0, lambda: self._log("Соединение WebSocket закрыто", "gray"))
         self.root.after(0, lambda: self.connect_btn.config(state=NORMAL, text="Подключиться"))
         self.root.after(0, lambda: self.disconnect_btn.config(state=DISABLED))
+
+    def _on_close_window(self):
+        if self.ws and self.ws.sock and self.ws.sock.connected:
+            try:
+                self.ws.send(json.dumps({"action": "disconnect"}))
+            except:
+                pass
+            finally:
+                self.ws.close()
+        self.root.destroy()
+
 
 if __name__ == "__main__":
     root = Tk()
