@@ -93,8 +93,7 @@ class ProfileView(APIView):
         responses={
             200: OpenApiResponse(description="Данные профиля", response=ProfileDetailSerializer),
             401: OpenApiResponse(description="Не авторизован"),
-        },
-        auth=[]
+        }
     )
     def get(self, request):
         serializer = ProfileDetailSerializer(request.user)
@@ -118,8 +117,7 @@ class ProfileView(APIView):
         200: OpenApiResponse(description="Пароль изменён"),
         400: OpenApiResponse(description="Ошибка валидации"),
         401: OpenApiResponse(description="Не авторизован"),
-    },
-    auth=[]
+    }
 )
 class PasswordResetView(UpdateAPIView):
     serializer_class = PasswordResetSerializer
@@ -144,8 +142,7 @@ class RefreshActivationKeyView(APIView):
                 }
             ),
             401: OpenApiResponse(description="Не авторизован"),
-        },
-        auth=[]
+        }
     )
     def post(self, request):
         user = request.user
