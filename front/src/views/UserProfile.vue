@@ -47,7 +47,7 @@ const refreshKey = async () => {
 
 const changePassword = async () => {
   try {
-    await axios.post('/api/change-password/', {
+    await axios.patch('/api/change-password/', {
       old_password: oldPassword.value,
       new_password: newPassword.value
     })
